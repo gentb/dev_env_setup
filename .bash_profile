@@ -1,11 +1,29 @@
 # Prompt
 
-  # This function is called in your prompt to output your active git branch.
+#  Description:  This file holds all my BASH configurations and aliases
+#
+#  Sections:
+#  1.   Environment Configuration
+#  2.   Change Defaults
+#  3.   File and Folder Management
+#  4.   Navigation
+#  5.   Process Management
+#  6.   Networking
+#  7.   System Operations & Information
+#  8.   Web Development
+
+#   -------------------------------
+#   1.  ENVIRONMENT CONFIGURATION
+#   -------------------------------
+
+#   Change Prompt
+
+  # output your active git branch in prompt
   function parse_git_branch {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/ (\1)/'
   }
 
-  # This function builds your prompt. It is called below
+  # build prompt
   function prompt {
     # Define some local colors
     local   RED="\[\033[0;31m\]"
@@ -18,31 +36,25 @@
       PS4='+ '
     }
 
-  # Finally call the function and our prompt is ready
+  # call prompt
   prompt
 
 
-# Environment Variables
-# =====================
+#   Library Paths
 
-  # Library Paths
-  # These variables tell your shell where they can find certain
-  # required libraries so other programs can reliably call the variable name
-  # instead of a hardcoded path.
+#   These variables tell your shell where they can find certain
+#   required libraries so other programs can reliably call the variable name
+#   instead of a hardcoded path.
 
     # NODE_PATH
     export NODE_MODULES="/Users/$USER/.nvm/versions/node/v6.10.2/lib/node_modules"
 
-    # Those NODE & Python Paths won't break anything even if you
-    # don't have NODE or Python installed. Eventually you will and
-    # then you don't have to update your bash_profile
+#   Configurations
 
-  # Configurations
-    # GIT_MERGE_AUTO_EDIT
     # This variable configures git to not require a message when you merge.
     export GIT_MERGE_AUTOEDIT='no'
 
-    # Editors
+#   Editors
     # Tells your shell that when a program requires various editors, use sublime.
     # The -w flag tells your shell to wait until sublime exits
     export VISUAL="subl -w"
@@ -51,7 +63,7 @@
     export EDITOR="subl -w"
 
 
-  # Paths
+#   Paths
 
     # The USR_PATHS variable will just store all relevant /usr paths for easier usage
     # Each path is seperate via a : and we always use absolute paths.
@@ -68,84 +80,239 @@
     # Read http://blog.seldomatt.com/blog/2012/10/08/bash-and-the-one-true-path/ for more on that.
     export PATH="$USR_PATHS:$PATH"
 
+#   -------------------------------
+#   3.  FILE AND FOLDER MANAGEMENT
+#   -------------------------------
 
-# Helpful Functions
-# =====================
+zipf () { zip -r "$1".zip "$1" ; }            # zipf:         To create a ZIP archive of a folder
+alias numFiles='echo $(ls -1 | wc -l)'        # numFiles:     Count of non-hidden files in current dir
+# alias make1mb='mkfile 1m ./1MB.dat'         # make1mb:      Creates a file of 1mb size (all zeros)
+# alias make5mb='mkfile 5m ./5MB.dat'         # make5mb:      Creates a file of 5mb size (all zeros)
+# alias make10mb='mkfile 10m ./10MB.dat'      # make10mb:     Creates a file of 10mb size (all zeros)
 
-# CD into the desktop from anywhere
+#   cdf:  'Cd's to frontmost window of MacOS Finder
+#   ------------------------------------------------------
+    cdf () {
+        currFolderPath=$( /usr/bin/osascript <<EOT
+            tell application "Finder"
+                try
+            set currFolder to (folder of the front window as alias)
+                on error
+            set currFolder to (path to desktop folder as alias)
+                end try
+                POSIX path of currFolder
+            end tell
+EOT
+        )
+        echo "cd to \"$currFolderPath\""
+        cd "$currFolderPath"
+    }
 
-function desktop {
-  cd /Users/$USER/Desktop/$@
-}
+#   extract:  Extract most know archives with one command
+#   ---------------------------------------------------------
 
-function code {
-  cd /Users/$USER/development/code/$@
-}
-
-function data {
-  cd /Users/$USER/data/$@
-}
-
-function projects {
-  cd /Users/$USER/development/code/projects/$@
-}
-
-function fpath {
-  osascript -e 'tell application "Finder"'\
-      -e "if (${1-1} <= (count Finder windows)) then"\
-      -e "get POSIX path of (target of window ${1-1} as alias)"\
-      -e 'else' \
-      -e 'get POSIX path of (desktop as alias)'\
-      -e 'end if' \
-      -e 'end tell';
-}
-
+    function extract {
+     if [ -z "$1" ]; then
+        # display usage if no parameters given
+        echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
+        echo "       extract <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
+        return 1
+     else
+        for n in $@
+        do
+          if [ -f "$n" ] ; then
+              case "${n%,}" in
+                *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar)
+                             tar xvf "$n"       ;;
+                *.lzma)      unlzma ./"$n"      ;;
+                *.bz2)       bunzip2 ./"$n"     ;;
+                *.rar)       unrar x -ad ./"$n" ;;
+                *.gz)        gunzip ./"$n"      ;;
+                *.zip)       unzip ./"$n"       ;;
+                *.z)         uncompress ./"$n"  ;;
+                *.7z|*.arj|*.cab|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xar)
+                             7z x ./"$n"        ;;
+                *.xz)        unxz ./"$n"        ;;
+                *.exe)       cabextract ./"$n"  ;;
+                *)
+                             echo "extract: '$n' - unknown archive method"
+                             return 1
+                             ;;
+              esac
+          else
+              echo "'$n' - file does not exist"
+              return 1
+          fi
+        done
+    fi
+    }
 
 # function Extract for common file formats
 
-function extract {
- if [ -z "$1" ]; then
-    # display usage if no parameters given
-    echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
-    echo "       extract <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
-    return 1
- else
-    for n in $@
-    do
-      if [ -f "$n" ] ; then
-          case "${n%,}" in
-            *.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar)
-                         tar xvf "$n"       ;;
-            *.lzma)      unlzma ./"$n"      ;;
-            *.bz2)       bunzip2 ./"$n"     ;;
-            *.rar)       unrar x -ad ./"$n" ;;
-            *.gz)        gunzip ./"$n"      ;;
-            *.zip)       unzip ./"$n"       ;;
-            *.z)         uncompress ./"$n"  ;;
-            *.7z|*.arj|*.cab|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.rpm|*.udf|*.wim|*.xar)
-                         7z x ./"$n"        ;;
-            *.xz)        unxz ./"$n"        ;;
-            *.exe)       cabextract ./"$n"  ;;
-            *)
-                         echo "extract: '$n' - unknown archive method"
-                         return 1
-                         ;;
-          esac
-      else
-          echo "'$n' - file does not exist"
-          return 1
-      fi
-    done
-fi
-}
+#   -------------------------------
+#   4.  NAVIGATION
+#   -------------------------------
 
-# easily grep for a matching process
 
-function psg {
-  FIRST=`echo $1 | sed -e 's/^\(.\).*/\1/'`
-  REST=`echo $1 | sed -e 's/^.\(.*\)/\1/'`
-  ps aux | grep "[$FIRST]$REST"
-}
+#   CD into the desktop from anywhere
+
+    function desktop {
+      cd /Users/$USER/Desktop/$@
+    }
+
+#   CD into code from anywhere
+
+    function code {
+      cd /Users/$USER/development/code/$@
+    }
+
+#   CD into data from anywhere
+
+    function data {
+      cd /Users/$USER/data/$@
+    }
+
+#   CD into projects from anywhere
+
+    function projects {
+      cd /Users/$USER/development/code/projects/$@
+    }
+
+#   pathname of highest finder window
+  function fpath {
+    osascript -e 'tell application "Finder"'\
+        -e "if (${1-1} <= (count Finder windows)) then"\
+        -e "get POSIX path of (target of window ${1-1} as alias)"\
+        -e 'else' \
+        -e 'get POSIX path of (desktop as alias)'\
+        -e 'end if' \
+        -e 'end tell';
+  }
+
+
+
+#   5.  PROCESS MANAGEMENT
+#   ---------------------------
+
+#   findPid: find out the pid of a specified process
+#   -----------------------------------------------------
+#       Note that the command name can be specified via a regex
+#       E.g. findPid '/d$/' finds pids of all processes with names ending in 'd'
+#       Without the 'sudo' it will only find processes of the current user
+#   -----------------------------------------------------
+    findPid () { lsof -t -c "$@" ; }
+
+#   memHogsTop, memHogsPs:  Find memory hogs
+#   -----------------------------------------------------
+    alias memHogsTop='top -l 1 -o rsize | head -20'
+    alias memHogsPs='ps wwaxm -o pid,stat,vsize,rss,time,command | head -10'
+
+#   cpuHogs:  Find CPU hogs
+#   -----------------------------------------------------
+    alias cpu_hogs='ps wwaxr -o pid,stat,%cpu,time,command | head -10'
+
+#   topForever:  Continual 'top' listing (every 10 seconds)
+#   -----------------------------------------------------
+    alias topForever='top -l 9999999 -s 10 -o cpu'
+
+#   ttop:  Recommended 'top' invocation to minimize resources
+#   ------------------------------------------------------------
+#       Taken from this macosxhints article
+#       http://www.macosxhints.com/article.php?story=20060816123853639
+#   ------------------------------------------------------------
+    alias ttop="top -R -F -s 10 -o rsize"
+
+#   my_ps: List processes owned by my user:
+#   ------------------------------------------------------------
+    my_ps() { ps $@ -u $USER -o pid,%cpu,%mem,start,time,bsdtime,command ; }
+
+
+#   easily grep for a matching process
+
+    function psg {
+      FIRST=`echo $1 | sed -e 's/^\(.\).*/\1/'`
+      REST=`echo $1 | sed -e 's/^.\(.*\)/\1/'`
+      ps aux | grep "[$FIRST]$REST"
+    }
+
+#   ---------------------------
+#   6.  NETWORKING
+#   ---------------------------
+
+    alias myip='curl ip.appspot.com'                    # myip:         Public facing IP Address
+    alias netCons='lsof -i'                             # netCons:      Show all open TCP/IP sockets
+    alias flushDNS='dscacheutil -flushcache'            # flushDNS:     Flush out the DNS Cache
+    alias lsock='sudo /usr/sbin/lsof -i -P'             # lsock:        Display open sockets
+    alias lsockU='sudo /usr/sbin/lsof -nP | grep UDP'   # lsockU:       Display only open UDP sockets
+    alias lsockT='sudo /usr/sbin/lsof -nP | grep TCP'   # lsockT:       Display only open TCP sockets
+    alias ipInfo0='ipconfig getpacket en0'              # ipInfo0:      Get info on connections for en0
+    alias ipInfo1='ipconfig getpacket en1'              # ipInfo1:      Get info on connections for en1
+    alias openPorts='sudo lsof -i | grep LISTEN'        # openPorts:    All listening connections
+    alias showBlocked='sudo ipfw list'                  # showBlocked:  All ipfw rules inc/ blocked IPs
+
+#   ii:  display useful host related informaton
+#   -------------------------------------------------------------------
+    ii() {
+        echo -e "\nYou are logged on ${RED}$HOST"
+        echo -e "\nAdditionnal information:$NC " ; uname -a
+        echo -e "\n${RED}Users logged on:$NC " ; w -h
+        echo -e "\n${RED}Current date :$NC " ; date
+        echo -e "\n${RED}Machine stats :$NC " ; uptime
+        echo -e "\n${RED}Current network location :$NC " ; scselect
+        echo -e "\n${RED}Public facing IP Address :$NC " ;myip
+        #echo -e "\n${RED}DNS Configuration:$NC " ; scutil --dns
+        echo
+    }
+
+
+#   ---------------------------------------
+#   7.  SYSTEMS OPERATIONS & INFORMATION
+#   ---------------------------------------
+
+    alias mountReadWrite='/sbin/mount -uw /'    # mountReadWrite:   For use when booted into single-user
+
+#   cleanupDS:  Recursively delete .DS_Store files
+#   -------------------------------------------------------------------
+    alias cleanupDS="find . -type f -name '*.DS_Store' -ls -delete"
+
+#   finderShowHidden:   Show hidden files in Finder
+#   finderHideHidden:   Hide hidden files in Finder
+#   -------------------------------------------------------------------
+    alias finderShowHidden='defaults write com.apple.finder ShowAllFiles TRUE'
+    alias finderHideHidden='defaults write com.apple.finder ShowAllFiles FALSE'
+
+#   cleanupLS:  Clean up LaunchServices to remove duplicates in the "Open With" menu
+#   -----------------------------------------------------------------------------------
+    alias cleanupLS="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder"
+
+#    screensaverDesktop: Run a screensaver on the Desktop
+#   -----------------------------------------------------------------------------------
+    alias screensaverDesktop='/System/Library/Frameworks/ScreenSaver.framework/Resources/ScreenSaverEngine.app/Contents/MacOS/ScreenSaverEngine -background'
+
+#   ---------------------------------------
+#   8.  WEB DEVELOPMENT
+#   ---------------------------------------
+
+#   open localhost to designated port
+    function lh () { open http://localhost:$1; }
+#   start simple python server (2.xx)
+    alias pysimpleserver='python -m SimpleHTTPServer'
+#   start simple python server (3.xx)
+    alias pyserver='python -m http.Server'
+
+#   extra
+    alias apacheEdit='sudo subl /etc/httpd/httpd.conf'      # apacheEdit:       Edit httpd.conf
+    alias apacheRestart='sudo apachectl graceful'           # apacheRestart:    Restart Apache
+    alias editHosts='sudo subl /etc/hosts'                  # editHosts:        Edit /etc/hosts file
+    alias herr='tail /var/log/httpd/error_log'              # herr:             Tails HTTP error logs
+    alias apacheLogs="less +F /var/log/apache2/error_log"   # Apachelogs:       Shows apache error logs
+    httpHeaders () { /usr/bin/curl -I -L $@ ; }             # httpHeaders:      Grabs headers from web page
+
+#   httpDebug:  Download a web page and show info on what took time
+#   -------------------------------------------------------------------
+    httpDebug () { /usr/bin/curl $@ -o /dev/null -w "dns: %{time_namelookup} connect: %{time_connect} pretransfer: %{time_pretransfer} starttransfer: %{time_starttransfer} total: %{time_total}\n" ; }
+
+
 
 
 
@@ -168,17 +335,9 @@ function psg {
   alias gcam="git commit -am"
   alias gbb="git branch -b"
 
-  alias pysimpleserver='python -m SimpleHTTPServer & lh 8000'
+  #use markdown to html generator
+  alias md2html='rm -r ../generated_html & marked-it-cli . --output=../generated_html/ --header-file=$NODE_MODULES/marked-it-cli/header.txt --footer-file=$NODE_MODULES/marked-it-cli/footer.txt --conref-file=$NODE_MODULES/marked-it-cli/cloudoeconrefs.yml --extension-file=$NODE_MODULES/marked-it-cli/example/accessibilityExt.js --extension-file=$NODE_MODULES/marked-it-cli/example/xmlTocExt.js --toc-xml --overwrite --verbose & subl ../generated_html'
 
-  alias fnum="ls -F |grep -v / | wc -l"
-
-  function pyserver () { python manage.py runserver $1; }
-
-  function lh () { open http://localhost:$1; }
-
-  # ActiveRecord Migrations
-  alias db:migrate:both='rake db:migrate && rake db:migrate RAILS_ENV=test'
-  alias db:rollback:both='rake db:rollback && rake db:rollback RAILS_ENV=test'
 
   # Finder settings
   alias ShowFiles='defaults write com.apple.finder AppleShowAllFiles TRUE
@@ -190,7 +349,7 @@ function psg {
 # Case-Insensitive Auto Completion
   bind "set completion-ignore-case on"
 
-#Tab completion
+# Tab completion
   if which brew &> /dev/null && [ -f "$(brew --prefix)/share/bash-completion/bash_completion" ]; then
     source "$(brew --prefix)/share/bash-completion/bash_completion";
   elif [ -f /etc/bash_completionon ]; then
