@@ -1,0 +1,56 @@
+[
+	{"id": "side-bar-files-open-with",
+		"children":
+		[
+
+			//application 1
+			{
+				"caption": "Photoshop",
+				"id": "side-bar-files-open-with-photoshop",
+
+				"command": "side_bar_files_open_with",
+				"args": {
+									"paths": [],
+									"application": "/Applications/Adobe Photoshop CS6.app", // OSX
+									"extensions":"psd|png|jpg|jpeg",  //any file with these extensions
+									"args":[]
+								},
+				"open_automatically" : false // will close the view/tab and launch the application
+			},
+
+			//separator
+			{"caption":"-"},
+
+			//application 2
+			{
+				"caption": "SQLite",
+				"id": "side-bar-files-open-with-sqlitebrowser",
+
+				"command": "side_bar_files_open_with",
+				"args": {
+									"paths": [],
+									"application": "/Applications/sqlitebrowser.app", // OSX
+									"extensions":"db", //open all even folders
+									"args":[]
+								},
+				"open_automatically" : false // will close the view/tab and launch the application
+			},
+			//application n
+			{
+				"caption": "Chrome",
+				"id": "side-bar-files-open-with-chrome",
+
+				"command": "side_bar_files_open_with",
+				"args": {
+									"paths": [],
+									"application":"Chrome.app",
+									"extensions":".*", //any file with extension
+									"args":[]
+						},
+				"open_automatically" : false // will close the view/tab and launch the application
+			},
+
+			{"caption":"-"}
+		]
+	}
+]

@@ -1,0 +1,13 @@
+{
+	"command_hash":
+	{
+		"encoding": "utf-8",
+		"env":
+		{
+		},
+		"file_regex": "([^ ]*\\.rb):?(\\d*)",
+		"shell_cmd": "( cd /Users/gbardhoshi/Development/code/labs/alphabetize-in-esperanto-001-prework-web && /Users/gbardhoshi/.rvm/bin/rvm-auto-ruby -S rspec spec/alphabetize_spec.rb)",
+		"syntax": "Packages/TestRSpec/themes/TestConsole.tmLanguage",
+		"working_dir": "/Users/gbardhoshi/Development/code/labs/alphabetize-in-esperanto-001-prework-web"
+	}
+}

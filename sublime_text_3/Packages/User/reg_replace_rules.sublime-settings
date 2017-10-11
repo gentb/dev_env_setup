@@ -1,0 +1,41 @@
+{
+  "extended_back_references": false,
+  "find_highlight_color": "invalid",
+  "find_highlight_style": "outline",
+  "format": "3.0",
+  "multi_pass_max_sweeps": 100,
+  "on_save": true,
+  "on_save_highlight_scope": "invalid",
+  "on_save_highlight_style": "outline",
+  "on_save_sequences": [
+    {
+      "file_pattern": [
+        "*.json"
+      ],
+      "file_regex": [
+        ".*\\.sublime-(settings|commands|menu|keymap|mousemap|theme|build|project|completions|commands)"
+      ],
+      "sequence": [
+        "remove_json_dangling_commas"
+      ]
+    },
+    {
+      "file_pattern": [
+        "*"
+      ],
+      "sequence": [
+        "remove_trailing_spaces"
+      ]
+    }
+  ],
+  "replacements": {
+    "js_class": {
+      "find": "(?i) class=\"",
+      "greedy": true,
+      "replace": " className=\""
+    }
+  },
+  "results_in_panel": true,
+  "selection_only": false,
+  "use_sub_notify": true
+}

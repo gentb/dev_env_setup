@@ -1,0 +1,16 @@
+<snippet>
+  <content><![CDATA[
+    <%= form_for ${1:@object} do |f| %>
+
+  <div class="form-group">
+    <%= f.label :attribute %>
+    <%= f.text_field :attribute, class: "form-control", placeholder: "" %>
+  </div>
+
+  <%= f.submit class: "btn btn-primary" %>
+
+<% end %>;$0]]></content>
+  <tabTrigger><![CDATA[bff]]></tabTrigger>
+  <scope>source.html.erb</scope>
+  <description>bootstrap form_for</description>
+</snippet>

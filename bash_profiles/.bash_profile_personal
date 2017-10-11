@@ -166,17 +166,17 @@ EOT
       cd /Users/$USER/development/code/$@
     }
 
-#   CD into data from anywhere
+# #   CD into data from anywhere
 
-    function data {
-      cd /Users/$USER/data/$@
-    }
+#     function data {
+#       cd /Users/$USER/data/$@
+#     }
 
-#   CD into projects from anywhere
+# #   CD into projects from anywhere
 
-    function projects {
-      cd /Users/$USER/development/code/projects/$@
-    }
+#     function projects {
+#       cd /Users/$USER/development/code/projects/$@
+#     }
 
 #   pathname of highest finder window
   function fpath {
@@ -387,12 +387,12 @@ EOT
 # =====================
 
 
-# added by Anaconda3 4.3.0 installer
-export PATH="/Users/$USER/anaconda/bin:$PATH"
+# # added by Anaconda3 4.3.0 installer
+# export PATH="/Users/$USER/anaconda/bin:$PATH"
 
-# added for NVM
-export NVM_DIR=~/.nvm
-source $(brew --prefix nvm)/nvm.sh
+# # added for NVM
+# export NVM_DIR=~/.nvm
+# source $(brew --prefix nvm)/nvm.sh
 
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*

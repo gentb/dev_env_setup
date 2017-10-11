@@ -1,0 +1,44 @@
+{
+  "alert-errors": false,
+  "autoformat": false,
+  "extensions": [
+    "js",
+    "json",
+    "jsx",
+    "sublime-settings"
+  ],
+  "ignore-selection": false,
+  "node-path": "/Users/gentianbardhoshi/.nvm/versions/node/v6.10.2/bin/node",
+  "options": {
+    "indent": {
+      "value": "  "
+    },
+    // "jsx": {
+    //   "alignWithFirstAttribute": true,
+    //   "attrsOnSameLineAsTag": true,
+    //   "firstAttributeOnSameLine": true,
+    //   "formatJSX": true,
+    //   "htmlOptions": {
+    //   },
+    //   "maxAttrsOnTag": 1,
+    //   "spaceInJSXExpressionContainers": " "
+    // },
+    "plugins": [
+      // "esformatter-jsx",
+      "esformatter-quotes"
+    ],
+    "quotes": {
+        "type": "double",
+        "avoidEscape": false
+      },
+    "preset": "jquery"
+  },
+  "options-JSON": {
+    "plugins": [
+      "esformatter-quotes"
+    ],
+    "quotes": {
+      "type": "double"
+    }
+  }
+}
